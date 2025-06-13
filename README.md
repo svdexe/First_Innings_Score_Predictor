@@ -10,10 +10,18 @@
 
 <div align="center">
   <h3>🎯 Predict IPL cricket scores with Machine Learning precision</h3>
-  <p>A sleek web application that predicts first innings scores for Indian Premier League matches using advanced regression algorithms.</p>
+  <p>A web application that predicts first innings scores for Indian Premier League matches using regression algorithms.</p>
 </div>
 
 ---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="https://github.com/svdexe/First_Innings_Score_Predictor/blob/main/Web_Input_img.png" alt="Web Input Interface" width="90%">
+  <br><br>
+  <img src="https://github.com/svdexe/First_Innings_Score_Predictor/blob/main/Web_Result_Image.png" alt="Prediction Result" width="90%">
+</div>
 
 ## ✨ Features
 
@@ -21,134 +29,66 @@
 - **🎨 Modern UI/UX** - Sleek gradient design with smooth animations
 - **📱 Responsive Design** - Works seamlessly across all devices
 - **⚡ Real-time Predictions** - Instant score predictions based on match situation
-- **🏆 IPL Team Support** - Covers all major IPL franchises
-
-## 🚀 Live Demo
-
-[View Live Application](your-heroku-app-url) • [API Documentation](link-to-docs)
-
-## 📸 Screenshots
-
-<div align="center">
-  <img src="screenshot1.png" alt="Home Page" width="45%">
-  <img src="screenshot2.png" alt="Prediction Result" width="45%">
-</div>
 
 ## 🛠️ Technologies Used
 
-| Technology | Purpose |
-|------------|---------|
-| **Python** | Backend development |
-| **Flask** | Web framework |
-| **Scikit-learn** | Machine learning models |
-| **Pandas** | Data manipulation |
-| **NumPy** | Numerical computing |
-| **HTML/CSS** | Frontend design |
-| **JavaScript** | Interactive elements |
+- **Python & Flask** - Backend web framework
+- **Scikit-learn** - Machine learning models
+- **Pandas & NumPy** - Data processing
+- **HTML/CSS/JavaScript** - Frontend interface
 
-## 📊 Model Performance
-
-| Model | MAE | MSE | RMSE | R² Score |
-|-------|-----|-----|------|----------|
-| Linear Regression | 15.2 | 284.5 | 16.9 | 0.842 |
-| Ridge Regression | 14.8 | 278.3 | 16.7 | 0.846 |
-| Lasso Regression | 15.0 | 281.2 | 16.8 | 0.844 |
-
-## 🔧 Installation & Setup
-
-### Prerequisites
-- Python 3.7+
-- pip package manager
-
-### Quick Start
+## 🔧 Quick Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/ipl-score-predictor.git
-   cd ipl-score-predictor
+   git clone https://github.com/svdexe/First_Innings_Score_Predictor.git
+   cd First_Innings_Score_Predictor
    ```
 
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
+2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the application**
+3. **Run the application**
    ```bash
    python app.py
    ```
 
-5. **Open your browser**
-   ```
-   http://localhost:5000
-   ```
+4. **Open browser at** `http://localhost:5000`
 
 ## 📁 Project Structure
 
 ```
-ipl-score-predictor/
 ├── 📄 app.py                          # Flask application
 ├── 🤖 first-innings-score-lr-model.pkl # Trained ML model
-├── 📊 First Innings Score Prediction - IPL.py # Model training script
-├── 🎨 templates/
-│   ├── index.html                     # Home page
-│   └── result.html                    # Results page
-├── 🖼️ static/
-│   ├── images/                        # Team logos
-│   └── favicon.ico                    # Site icon
+├── 🎨 templates/                       # HTML templates
+├── 🖼️ static/                         # Static files
 ├── 📊 ipl.csv                         # Training dataset
 └── 📋 requirements.txt                # Dependencies
 ```
 
 ## 🎯 How It Works
 
-1. **Data Input** - User selects batting/bowling teams and enters match statistics
-2. **Feature Engineering** - Categorical variables are one-hot encoded
-3. **Prediction** - Trained model predicts the final score
-4. **Result Display** - Shows predicted score range with confidence interval
+**Input Parameters:**
+- 🏏 Batting & Bowling Teams  
+- ⏰ Current Over (≥ 5.0)
+- 🏃 Current Runs & Wickets
+- 📊 Last 5 Overs Statistics
 
-### Input Parameters
-- 🏏 **Batting Team** - Team currently batting
-- 🥎 **Bowling Team** - Team currently bowling  
-- ⏰ **Overs** - Current over (≥ 5.0)
-- 🏃 **Runs** - Current runs scored
-- 🚫 **Wickets** - Current wickets fallen
-- 📊 **Last 5 Overs Stats** - Runs and wickets in previous 5 overs
+**Process:** Data → Feature Engineering → ML Prediction → Score Range Display
 
 ## 🏆 Supported Teams
 
-<div align="center">
-  <table>
-    <tr>
-      <td>🔵 Mumbai Indians</td>
-      <td>🟡 Chennai Super Kings</td>
-      <td>🔴 Royal Challengers Bangalore</td>
-      <td>🟣 Kolkata Knight Riders</td>
-    </tr>
-    <tr>
-      <td>🟠 Sunrisers Hyderabad</td>
-      <td>🌸 Rajasthan Royals</td>
-      <td>❤️ Kings XI Punjab</td>
-      <td>🔷 Delhi Daredevils</td>
-    </tr>
-  </table>
-</div>
+Chennai Super Kings • Mumbai Indians • Royal Challengers Bangalore • Kolkata Knight Riders • Sunrisers Hyderabad • Rajasthan Royals • Kings XI Punjab • Delhi Daredevils
 
-## 📈 Model Training
+## 📈 Model Performance
 
-The model was trained on historical IPL data with the following steps:
-
-1. **Data Cleaning** - Removed inconsistent teams and early overs data
-2. **Feature Engineering** - One-hot encoding for categorical variables
-3. **Train-Test Split** - 2008-2016 for training, 2017+ for testing
-4. **Model Selection** - Compared Linear, Ridge, and Lasso regression
-5. **Hyperparameter Tuning** - Grid search for optimal parameters
+| Model | RMSE | R² Score |
+|-------|------|----------|
+| Linear Regression | 16.9 | 0.842 |
+| Ridge Regression | 16.7 | 0.846 |
+| Lasso Regression | 16.8 | 0.844 |
 
 ## 🤝 Contributing
 
@@ -167,9 +107,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgements
 
 - **IPL** for the exciting cricket data
-- **Scikit-learn** for the machine learning tools
-- **Flask** for the web framework
-- **Heroku** for deployment platform
+- **CampusX** · for the comprehensive [original tutorial](https://www.youtube.com/watch?v=1YoD0fg3_EM&t=5947s) that served as the foundation for this project  
+
+
+
 
 ## 📧 Contact
 
