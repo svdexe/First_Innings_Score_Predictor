@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>First Innings Score Predictor</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='ipl-favicon.ico') }}">
+        <script src="https://kit.fontawesome.com/5f3f547070.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+                min-height: 100vh;
+                font-family: 'Inter', sans-serif;
+                color: #e0e6ed;
+                overflow-x: hidden;
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                           radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .container {
+                text-align: center;
+                padding: 3rem 2rem 2rem;
+                background: rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(10px);
+                margin-bottom: 2rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .container-heading {
+                font-size: 2.8rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                line-height: 1.2;
+            }
+
+            .heading_first {
+                font-family: 'Inter', sans-serif;
+                color: #ffffff;
+                font-weight: 600;
+            }
+
+            .heading_second {
+                font-family: 'Orbitron', monospace;
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+                background-size: 300% 300%;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: gradientShift 4s ease-in-out infinite;
+                font-weight: 700;
+            }
+
+            @keyframes gradientShift {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+            }
+
+            .description {
+                margin-top: 1rem;
+            }
+
+            .description p {
+                font-size: 1.2rem;
+                color: #a0a6b0;
+                font-weight: 300;
+                letter-spacing: 0.5px;
+            }
+
+            .prediction-area {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 2rem;
+                gap: 2rem;
+            }
+
+            .ipl-banner-left, .ipl-banner-right {
+                flex: 1;
+                max-width: 300px;
+            }
+
+            .slider-frame {
+                height: 600px;
+                overflow: hidden;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .slide-images-up, .slide-images-down {
+                animation-duration: 16s;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+
+            .slide-images-up {
+                animation-name: slideUp;
+            }
+
+            .slide-images-down {
+                animation-name: slideDown;
+            }
+
+            @keyframes slideUp {
+                0% { transform: translateY(0); }
+                100% { transform: translateY(-50%); }
+            }
+
+            @keyframes slideDown {
+                0% { transform: translateY(-50%); }
+                100% { transform: translateY(0); }
+            }
+
+            .image-container {
+                height: 150px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+            }
+
+            .image-width {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: brightness(0.9) contrast(1.1);
+                transition: all 0.3s ease;
+                scale: 1.2;
+            }
+
+            .image-width:hover {
+                filter: brightness(1.1) contrast(1.2);
+                transform: scale(1.05);
+            }
+
+            .div2 {
+                flex: 2;
+                max-width: 500px;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(15px);
+                border-radius: 25px;
+                padding: 3rem;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+            }
+
+            .div2::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+                border-radius: 25px 25px 0 0;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 1rem 1.5rem;
+                margin-bottom: 1.5rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                color: #ffffff;
+                font-size: 1rem;
+                font-family: 'Inter', sans-serif;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #4ecdc4;
+                background: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .form-input::placeholder {
+                color: #a0a6b0;
+                font-weight: 300;
+            }
+
+            .form-input option {
+                background: #1a1a2e;
+                color: #ffffff;
+                padding: 0.5rem;
+            }
+
+            .myButton {
+                width: 100%;
+                padding: 1.2rem 2rem;
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                border: none;
+                border-radius: 15px;
+                color: #ffffff;
+                font-size: 1.1rem;
+                font-weight: 600;
+                font-family: 'Inter', sans-serif;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            }
+
+            .myButton:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+                background: linear-gradient(45deg, #ff5252, #26a69a);
+            }
+
+            .myButton:active {
+                transform: translateY(-1px);
+            }
+
+            .footer {
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(15px);
+                padding: 2rem;
+                text-align: center;
+                margin-top: 3rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .contact {
+                margin-bottom: 1rem;
+            }
+
+            .contact-icon {
+                color: #a0a6b0;
+                margin: 0 1rem;
+                transition: all 0.3s ease;
+                font-size: 1.5rem;
+            }
+
+            .contact-icon:hover {
+                color: #4ecdc4;
+                transform: translateY(-3px) scale(1.2);
+            }
+
+            .footer-description {
+                color: #6c757d;
+                font-size: 0.9rem;
+                font-weight: 300;
+                letter-spacing: 0.5px;
+            }
+
+            @media (max-width: 1200px) {
+                .prediction-area {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .ipl-banner-left, .ipl-banner-right {
+                    display: none;
+                }
+
+                .div2 {
+                    max-width: 600px;
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .container-heading {
+                    font-size: 2rem;
+                }
+
+                .div2 {
+                    padding: 2rem;
+                    margin: 1rem;
+                }
+
+                .prediction-area {
+                    padding: 1rem;
+                }
+            }
+
+            .align-center {
+                text-align: center;
+            }
+
+            /* Custom scrollbar */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                border-radius: 4px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(45deg, #ff5252, #26a69a);
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Website Title -->
+        <div class="container">
+            <h2 class='container-heading'>
+                <span class='heading_first'>First Innings Score Predictor for </span>
+                <span class="heading_second">Indian Premier League (IPL)</span>
+            </h2>
+            <div class='description'>
+                <p>A Machine Learning Web App, Built with Flask, Deployed using Heroku.</p>
+            </div>
+        </div>
+
+        <!-- Prediction Area -->
+        <div class="prediction-area">
+            <!-- IPL Banner - 1 -->
+            <div class='ipl-banner-left'>
+                <div class="slider-frame">
+                    <div class="slide-images-up">
+                        <!-- Image-1 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='mi.jpg') }}" alt="Mumbai Indians">
+                        </div>
+                        <!-- Image-2 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='srh.png') }}" alt="Sunrisers Hyderabad">
+                        </div>
+                        <!-- Image-3 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='rcb.png') }}" alt="Royal Challengers Bangalore">
+                        </div>
+                        <!-- Image-4 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='dc.png') }}" alt="Delhi Capitals">
+                        </div>
+                        <!-- Image-5 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='rr.png') }}" alt="Rajasthan Royals">
+                        </div>
+                        <!-- Image-6 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='kkr.jpg') }}" alt="Kolkata Knight Riders">
+                        </div>
+                        <!-- Image-7 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='kxip.png') }}" alt="Kings XI Punjab">
+                        </div>
+                        <!-- Image-8 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='csk.png') }}" alt="Chennai Super Kings">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Form -->
+            <div class='div2'>
+                <form action="{{ url_for('predict') }}" method="POST">
+                    <!-- Batting Team Dropdown -->
+                    <select class="form-input align-center" name="batting-team">
+                        <option value="none">--- Select a Batting team ---</option>
+                        <option value="Mumbai Indians">Mumbai Indians</option>
+                        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                        <option value="Chennai Super Kings">Chennai Super Kings</option>
+                        <option value="Rajasthan Royals">Rajasthan Royals</option>
+                        <option value="Kings XI Punjab">Kings XI Punjab</option>
+                        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                        <option value="Delhi Daredevils">Delhi Daredevils</option>
+                        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                    </select><br>
+                    <!-- Bowling Team Dropdown -->
+                    <select class="form-input align-center" name="bowling-team">
+                        <option value="none">--- Select a Bowling team ---</option>
+                        <option value="Mumbai Indians">Mumbai Indians</option>
+                        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                        <option value="Chennai Super Kings">Chennai Super Kings</option>
+                        <option value="Rajasthan Royals">Rajasthan Royals</option>
+                        <option value="Kings XI Punjab">Kings XI Punjab</option>
+                        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                        <option value="Delhi Daredevils">Delhi Daredevils</option>
+                        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                    </select><br>
+                    <input class="form-input" type="text" name="overs" placeholder="Overs (>= 5.0) eg. 7.2"><br>
+                    <input class="form-input" type="text" name="runs" placeholder="Runs eg. 64"><br>
+                    <input class="form-input" type="text" name="wickets" placeholder="Wickets eg. 4"><br>
+                    <input class="form-input" type="text" name="runs_in_prev_5" placeholder="Runs scored in previous 5 Overs eg. 42"><br>
+                    <input class="form-input" type="text" name="wickets_in_prev_5" placeholder="Wickets taken in previous 5 Overs eg. 3"><br>
+
+                    <input type="submit" class="myButton" value="Predict Score">
+                </form>
+            </div>
+
+            <!-- IPL Banner - 2 -->
+            <div class='ipl-banner-right'>
+                <div class="slider-frame">
+                    <div class="slide-images-down">
+                        <!-- Image-1 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='mi.jpg') }}" alt="Mumbai Indians">
+                        </div>
+                        <!-- Image-2 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='srh.png') }}" alt="Sunrisers Hyderabad">
+                        </div>
+                        <!-- Image-3 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='rcb.png') }}" alt="Royal Challengers Bangalore">
+                        </div>
+                        <!-- Image-4 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='dc.png') }}" alt="Delhi Capitals">
+                        </div>
+                        <!-- Image-5 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='kkr.jpg') }}" alt="Kolkata Knight Riders">
+                        </div>
+                        <!-- Image-6 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='rr.png') }}" alt="Rajasthan Royals">
+                        </div>
+                        <!-- Image-7 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='kxip.png') }}" alt="Kings XI Punjab">
+                        </div>
+                        <!-- Image-8 -->
+                        <div class="image-container">
+                            <img class="image-width" src="{{ url_for('static', filename='csk.png') }}" alt="Chennai Super Kings">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class='footer'>
+            <div class="contact">
+                <a target="_blank" href="https://github.com/svdexe/IPL_First_Inning_score_predictor"><i class="fab fa-github fa-lg contact-icon"></i></a>
+                <a target="_blank" href="https://www.linkedin.com/in/shivam-dali-86b0a1201/"><i class="fab fa-linkedin fa-lg contact-icon"></i></a>
+            </div>
+            <p class='footer-description'>© Copyright, Shivam Dali</p>
+        </div>
+    </body>
+</html>
